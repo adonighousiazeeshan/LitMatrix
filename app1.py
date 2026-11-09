@@ -5,7 +5,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_groq import ChatGroq
 from dotenv import load_dotenv
 from pdf_processor import process_uploaded_files
-from claim_verifier import verify_claim
+
 
 # Load environment variables
 load_dotenv()
@@ -315,46 +315,7 @@ Context:
                     else:
                         st.warning("No relevant chunks were retrieved.")
 
-                # ======================================
-                # CLAIM VERIFICATION & GROUNDING AUDIT
-                # ======================================
-                try:
-                    audit_report = verify_claim(
-                        response,
-                        retrieved_docs
-                    )
-
-                    with st.expander("🛡️ View Claim Verification Audit"):
-
-                        if audit_report:
-
-                            st.metric(
-                                label="Overall Trust Score",
-                                value=f"{audit_report.overall_trust_score:.1f}%"
-                            )
-
-                            st.markdown("---")
-
-                            for idx, eval_item in enumerate(
-                                audit_report.evaluations,
-                                1
-                            ):
-
-                                status_icon = (
-                                    "✅" if eval_item.is_supported else "❌"
-                                )
-
-                                st.markdown(f"**Claim {idx}:** {eval_item.claim}")
-                                st.markdown(f"**Status:** {status_icon}")
-                                st.markdown(f"*Reasoning:* {eval_item.reasoning}")
-                                st.markdown("---")
-
-                        else:
-                            st.warning("Audit report returned empty.")
-
-                except Exception as e:
-                    with st.expander("🛡️ View Claim Verification Audit"):
-                        st.error(f"❌ Verification Error: {str(e)}")
+                
 
         # Save assistant response in chat history
         st.session_state.messages.append(
